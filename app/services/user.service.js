@@ -29,6 +29,7 @@ module.exports = {
 			let query = user_mongo.find(q)
 			query.limit(size)
 			query.skip(start)
+			query.select({key : 0, password : 0})
 			if(sort && sort != '') {
 				sort = sort.split("|")
 				if(sort[1] == 'asc') sort = sort[0]
@@ -37,6 +38,39 @@ module.exports = {
 			}
 			query.exec((err, users) => {
 				return callback(users, count)
+			})
+		})
+	},
+	getSubscribe(user) {
+		return new Promise((resolve, reject) => {
+			user_mongo.findOne({_id : user})
+			.populate({
+				path   : 'subscribe.user',
+				model  : 'user',
+				select : {_id : 1, headerImage : 1, desc : 1, username : 1, name : 1, phone : 1, email : 1}
+			})
+			.exec((err, result) => {
+				if(err) reject(err);
+				else resolve(result);
+			})
+		})
+	},
+	putSubscribe(_id, user_id) {
+		return new Promise((resolve, reject) => {
+			user_mongo.findOne({_id})
+			.exec((err, user) => {
+				const subindex = user.subscribe.findIndex(val => {
+					console.log('val.user', val.user, user_id)
+
+					return val.user == user_id
+				});
+				console.log('val.index', subindex)
+				if(subindex > -1) user.subscribe.splice(subindex, 1);
+				else user.subscribe.push({user : user_id});
+				user.save(err => {
+					if(err) reject(err);
+					else resolve(user);
+				})
 			})
 		})
 	},
@@ -144,6 +178,7 @@ module.exports = {
 				if(user) {
 					// 解密
 					encryption.decipher(user.password, user.key, pwd => {
+						console.log('pwd == query.password', pwd , query.password)
 						if(pwd == query.password) return resolve(user)
 						else return reject();
 					})

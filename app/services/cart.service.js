@@ -17,7 +17,7 @@ module.exports = {
 				if(err) return reject(err);
 				if(!cart || cart == 'null' || cart == null) {
 					var model  = new cart_mongo({
-						user_id,
+						user : user_id,
 						cart_item      : []
 					});
 					model.save(err => {
@@ -37,7 +37,7 @@ module.exports = {
 	},
 	getCartForMongo(user_id) {
 		return new Promise((resolve, reject) => {
-			cart_mongo.findOne({user_id}, (err, cart) => {
+			cart_mongo.findOne({user : user_id}, (err, cart) => {
 				if(err) reject(err);
 				else resolve(cart)
 			})
@@ -49,7 +49,7 @@ module.exports = {
 				if(cart) return resolve(cart)
 
 				var model  = new cart_mongo({
-					user_id,
+					user : user_id,
 					cart_item      : []
 				});
 				model.save(err => {
@@ -79,27 +79,13 @@ module.exports = {
 			
 			that.getCart(user_id)
 			.then(cart => {
-
-				let cart_item = [];
-				if(typeof select == 'string') select = [select]
-				async.each(select, (val, cb) => {
-					const c = cart.cart_item.find((v, index) => {
-						if(v._id == val) {
-							cart.cart_item.splice(index, 1);
-							return true;
-						} else false
-					});
-					if(c) cart_item.push(Object.create(c));
-					cb();
-				}, err => {
-					resolve({cart_item, clearNext: () => {
-							cart.save(err => {
-								if(err) console.log('清空购物车失败:', err)
-							})
-						}
-					});
-				})
-				
+				resolve({cart_item : cart.cart_item, clearNext: () => {
+						cart.cart_item = []
+						cart.save(err => {
+							if(err) console.log('清空购物车失败:', err)
+						})
+					}
+				});
 			})
 		})
 	},

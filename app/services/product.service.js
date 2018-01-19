@@ -16,7 +16,7 @@ module.exports = {
 			let query = product_mongo.find({})
 			query.populate({
 				path : 'user',
-				select : ['_id', 'name', 'headerImage']
+				select : {key : 0, password : 0}
 			})
 			query.limit(size)
 			query.skip(start)
@@ -26,8 +26,23 @@ module.exports = {
 				else sort = '-' + sort[0]
 				query.sort(sort)
 			}
+			query.sort({createTime : -1})
 			query.exec((err, products) => {
 				return callback(products, count)
+			})
+		})
+	},
+	getProductForMe(user) {
+		return new Promise((resolve, reject) => {
+			product_mongo.find({user})
+			query.populate({
+				path   : 'user',
+				model  : 'user',
+				select : {key : 0, password : 0}
+			})
+			.exec((err, result) => {
+				if(err) return reject(err);
+				resolve(result);
 			})
 		})
 	},

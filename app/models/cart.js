@@ -14,8 +14,8 @@ cart_item_Schema = new Schema({
 	CreateTime : { type : Date, default : Date.now }
 }),
 cart_Schema = new Schema({
-	user_id        : { type : Schema.Types.ObjectId, ref : 'user'},
-	cart_item      : [cart_item_Schema]
+	user      : { type : Schema.Types.ObjectId, ref : 'user'},
+	cart_item : [cart_item_Schema]
 })
 
 cart_Schema.virtual('date').get(() => {
@@ -24,13 +24,28 @@ cart_Schema.virtual('date').get(() => {
 
 cart_Schema.statics = {
 	findById(_id, callback) {
-		return this.findOne({_id}, (err, cart) => callback(cart))
-	},
-	getUserId(user_id, callback) {
-		this.findOne({user_id})
+		return this.findOne({_id})
 		.populate({
 			path     : 'cart_item.product',
 			model    : 'product',
+			populate : {
+				path   : 'user',
+				model  : 'user',
+				select : {_id : 1, name : 1, headerImage : 1}
+			}
+		})
+		.exec((err, cart) => callback(cart))
+	},
+	getUserId(user_id, callback) {
+		this.findOne({user : user_id})
+		.populate({
+			path     : 'cart_item.product',
+			model    : 'product',
+			populate : {
+				path   : 'user',
+				model  : 'user',
+				select : {_id : 1, name : 1, headerImage : 1}
+			}
 		})
 		.exec(callback)
 	}

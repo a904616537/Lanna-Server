@@ -7,6 +7,10 @@
 
 var mongoose = require('mongoose'),
 Schema       = mongoose.Schema,
+subscribe_Schema = new Schema({
+	user       : { type : Schema.Types.ObjectId, ref : 'user'},
+	CreateTime : { type : Date, default : Date.now }
+}),
 user_Schema  = new Schema({
 	email       : { type : String, default : ''},
 	phone       : { type : String, default : ''},
@@ -29,6 +33,7 @@ user_Schema  = new Schema({
 	following  : { type : Number, default : 0 },	// ？？？？
 	followers  : { type : Number, default : 0 },	// 追随？？？
 	points     : { type : Number, default : 0 },	// 点赞？？？
+	subscribe : [subscribe_Schema],
 	CreateTime : { type : Date, default : Date.now }
 });
 

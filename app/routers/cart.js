@@ -22,17 +22,17 @@ getCount = (req, reply) => {
 },
 addCart = (req, reply) => {
 	const user_id = req.auth.credentials._id;
-	const { product_id, number } = req.payload;
+	const { _id, number } = req.payload;
 	_cart.getCart(user_id)
 	.then(cart => {
 		let cart_item = cart.cart_item.find(value => {
-			if(value.product) return value.product._id == product_id;
+			if(value.product) return value.product._id == _id;
 			else return false;
 		})
 
 		if(cart_item) cart_item.number += Number(number);
 		else cart.cart_item.push({
-				product : product_id,
+				product : _id,
 				number  : Number(number),
 			})
 		_cart.Update(cart)
@@ -71,6 +71,7 @@ putCart = (req, reply) => {
 delCart = (req, reply) => {
 	const user_id = req.auth.credentials._id;
 	const { _id } = req.payload;
+	console.log('_id', _id)
 	_cart.getCart(user_id)
 	.then(cart => {
 		let index = cart.cart_item.findIndex(value => value._id == _id)

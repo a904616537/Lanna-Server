@@ -17,17 +17,18 @@ order_item_Schema = new Schema({
 	total    : { type: Number, default: 0, set: v => Number(v).toFixed(2)}
 }),
 order_Schema = new Schema({
-	_id             : { type: String, required: true},
-	user            : { type: Schema.Types.ObjectId, ref: 'user'},
-	total           : { type: Number, default: 0, min: 0, set: v => Number(v).toFixed(2) },//总价
-	freight         : { type: Number, default: 0, min: 0, set: v => Number(v).toFixed(2) },//运费
-	remark          : { type: String, default: '' },
-	status          : { type: Number, default: 0 }, // 订单状态，0: 已下单但未付款,1: 已付款, 2: 已出货，3，已完成, 4：取消
-	discount        : { type: Number, default: 0, set: v => Number(v).toFixed(2) }, // 折扣
-	is_subscribe    : { type: Boolean, default: false },	// 是否为订阅生成
-	CreateTime      : { type: Date, default : Date.now },
-	order_item      : [order_item_Schema],
-	address         : address_Scheam
+	_id        : { type: String, required: true},
+	user       : { type: Schema.Types.ObjectId, ref: 'user'},
+	supplier   : { type: Schema.Types.ObjectId, ref: 'user'},	// 供应⬆商
+	pid        : { type: String},	//  父订单
+	is_sub     : { type: Boolean, default : false},	// 子订单
+	total      : { type: Number, default: 0, min: 0, set: v => Number(v).toFixed(2) },//总价
+	freight    : { type: Number, default: 0, min: 0, set: v => Number(v).toFixed(2) },//运费
+	status     : { type: Number, default: 0 }, // 订单状态，0: 已下单但未付款,1: 已付款, 2: 已出货，3，已完成, 4：取消
+	discount   : { type: Number, default: 0, set: v => Number(v).toFixed(2) }, // 折扣
+	CreateTime : { type: Date, default : Date.now },
+	order_item : [order_item_Schema],
+	address    : address_Scheam
 });
 
 order_Schema.statics = {
@@ -35,11 +36,12 @@ order_Schema.statics = {
 		this.findOne({_id})
 		.populate({
 			path     : 'order_item.product',
-			model    : 'product'
-		})
-		.populate({
-			path     : 'snackpack_item.snackpack',
-			model    : 'snackpack'
+			model    : 'product',
+			populate : {
+			  	path  : 'user',
+				model : 'user',
+				select : {key : 0, password : 0}
+			}
 		})
 		.exec(callback)
 	},
@@ -51,15 +53,13 @@ order_Schema.statics = {
 		})
 		.exec(callback)
 	},
-	getOrderByUser(_id, query, callback) {
-		let select = {};
-		if(query) select = {status : query};
-
-		this.find(select)
+	getOrderByUser(user_id, callback) {
+		this.find({user : user_id})
 		.populate({
 			path     : 'order_item.product',
 			model    : 'product'
 		})
+		.select({_id : 1, status : 1, product : 1, CreateTime : 1})
 		.exec(callback)
 	}
 }

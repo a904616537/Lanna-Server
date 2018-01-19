@@ -16,19 +16,26 @@ const router = {
 		page     = parseInt(page);
 		per_page = parseInt(per_page);
 		service.getProduct(page, per_page, sort, (products, count) => {
-			console.log('products', products)
 			let { total, last_page, next_page_url, prev_page_url} = help.calculate(page, per_page, count, '/product');
 			reply({data: products, current_page: page, total, per_page, last_page, next_page_url, prev_page_url })
 		})
 	},
+	getMe(req, reply) {
+		const user = req.auth.credentials._id;
+		service.getProductForMe(user)
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
+	},
 	put(req, reply) {
 		service.Update(req.payload)
-		.then(product => reply({status : true, data : product}))
-		.catch(err => reply({status : false, err : err}))
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
 	},
 	post(req, reply) {
+		
 		req.payload.user = req.auth.credentials._id;
 		req.payload.attribute = [];
+
 		req.payload.attribute.push({
 			title   : 'Roast',
 			content : req.payload.roast
@@ -55,8 +62,8 @@ const router = {
 		})
 
 		service.Insert(req.payload)
-		.then(product => reply({status : true, data : product}))
-		.catch(err => reply({status : false, err : err}))
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
 	}
 }
 
@@ -68,6 +75,13 @@ module.exports = [{
 	config : {
 		handler     : router.get,
 		description : '<p>获取商品</p>'
+	}
+}, {
+	method : 'get',
+	path   : `/${ROUTE_NAME}/me`,
+	config : {
+		handler     : router.getMe,
+		description : '<p>获取自己上传商品</p>'
 	}
 }, {
 	method : 'post',
