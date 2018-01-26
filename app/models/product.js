@@ -9,6 +9,7 @@ var mongoose   = require('mongoose'),
 Schema         = mongoose.Schema,
 attribute_Schema = new Schema({
 	title      : { type : String, default : '' },
+	desc      : { type : String, default : '' },
 	content    : { type : String, default : '' },
 	CreateTime : { type : Date, default : Date.now }
 }),

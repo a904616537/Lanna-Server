@@ -38,26 +38,32 @@ const router = {
 
 		req.payload.attribute.push({
 			title   : 'Roast',
+			desc    : req.payload.roast_title,
 			content : req.payload.roast
 		})
 		req.payload.attribute.push({
 			title   : 'Body',
+			desc    : req.payload.body_title,
 			content : req.payload.body
 		})
 		req.payload.attribute.push({
 			title   : 'Flavors',
+			desc    : req.payload.flavors_title,
 			content : req.payload.flavors
 		})
 		req.payload.attribute.push({
 			title   : 'Aromas',
+			desc    : req.payload.aromas_title,
 			content : req.payload.aromas
 		})
 		req.payload.attribute.push({
 			title   : 'Detail',
+			desc    : req.payload.detail_title,
 			content : req.payload.detail
 		})
 		req.payload.attribute.push({
 			title   : 'Detail',
+			desc    : req.payload.detail_more,
 			content : req.payload.detail_more
 		})
 
