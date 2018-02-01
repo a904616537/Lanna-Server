@@ -26,13 +26,25 @@ const router = {
 		.then(result => reply(msg.success('success', result)))
 		.catch(err => reply(msg.unsuccess('error', err)));
 	},
+	getComments(req, reply) {
+		// const user = req.auth.credentials._id;
+		console.log('req.params', req.query)
+		const {_id} = req.query;
+		service.getComments(_id)
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
+	},
 	put(req, reply) {
 		service.Update(req.payload)
 		.then(result => reply(msg.success('success', result)))
 		.catch(err => reply(msg.unsuccess('error', err)));
 	},
+	postComments(req, reply) {
+		service.InsertComments(req.payload)
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
+	},
 	post(req, reply) {
-		
 		req.payload.user = req.auth.credentials._id;
 		req.payload.attribute = [];
 
@@ -90,11 +102,25 @@ module.exports = [{
 		description : '<p>获取自己上传商品</p>'
 	}
 }, {
+	method : 'get',
+	path   : `/${ROUTE_NAME}/comments`,
+	config : {
+		handler     : router.getComments,
+		description : '<p>获取商品评论</p>'
+	}
+}, {
 	method : 'post',
 	path   : `/${ROUTE_NAME}`,
 	config : {
 		handler     : router.post,
 		description : '<p>新增商品</p>'
+	}
+}, {
+	method : 'post',
+	path   : `/${ROUTE_NAME}/comments`,
+	config : {
+		handler     : router.postComments,
+		description : '<p>商品新增评论</p>'
 	}
 }, {
 	method : 'put',

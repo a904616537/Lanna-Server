@@ -72,6 +72,12 @@ const router = {
 		service.UpdateStatus(_id, status)
 		.then(result => reply(msg.success('success', result)))
 		.catch(err => reply(msg.unsuccess('error', err)))
+	},
+	putOrderComment(req, reply) {
+		const _id = req.params._id;
+		service.updateComment(_id)
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)))	
 	}
 }
 

@@ -89,6 +89,20 @@ module.exports = {
 		query.sort({CreateTime : -1})
 		query.exec(callback)
 	},
+	updateComment(_id) {
+		return new Promise((resolve, reject) => {
+			order_mongo.findOne({_id})
+			.exec((err, order) => {
+				if(order) {
+					order.is_comment = true;
+					order.save((err, order) => {
+						if(err) reject()
+						else resolve(order)
+					})
+				} else reject()
+			})
+		});
+	},
 	Insert(user, order) {
 		return new Promise((resolve, reject) => {
 			if(!order._id) order._id = getId();

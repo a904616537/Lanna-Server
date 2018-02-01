@@ -29,7 +29,7 @@ product_Schema = new Schema({
 	order : { type : Number, default : 0 },
 	img   : [ String ],
 	evaluate : {
-		star   : { type : Number, default : 4, min : 1, max : 5 },	// 星级
+		star   : { type : Number, default : 5, min : 1, max : 5 },	// 星级
 		total  : { type : Number, default : 0 },	// 总分
 		number : { type : Number, default : 0 },	// 评价人数
 	},

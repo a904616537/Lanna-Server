@@ -4,9 +4,11 @@
 
 'use strict';
 
-const config = require('../../config/config'),
-mongoose     = require('mongoose'),
-article_mongo = mongoose.model('article');
+const config           = require('../../config/config'),
+mongoose               = require('mongoose'),
+user_mongo             = mongoose.model('user'),
+article_mongo          = mongoose.model('article'),
+article_comments_mongo = mongoose.model('article_comments');
 
 
 
@@ -20,7 +22,8 @@ module.exports = {
 			query.skip(start)
 			query.populate({
 				path     : 'user',
-				model    : 'user'
+				model    : 'user',
+				select : {key : 0, password : 0}
 			})
 			if(sort && sort != '') {
 				sort = sort.split("|")
@@ -31,6 +34,34 @@ module.exports = {
 			query.sort({createTime : -1})
 			query.exec((err, articles) => callback(articles, count));
 		})
+	},
+	getArticleForSub(user, is_sub, callback) {
+		// let query = article_mongo.find({});
+		if(is_sub == 'true') {
+			article_mongo.find({user : user})
+			.populate({
+				path     : 'user',
+				model    : 'user',
+				select : {key : 0, password : 0}
+			})
+			.sort({createTime : -1})
+			.exec((err, result) => callback(result))
+		} else {
+			// 获取用户组
+			user_mongo.findOne({_id : user})
+			.exec((err, result) => {
+				const users = result.subscribe.map(val => val.user);
+				users.push(user);
+				article_mongo.find({user : {$in : users}})
+				.populate({
+					path     : 'user',
+					model    : 'user',
+					select : {key : 0, password : 0}
+				})
+				.sort({createTime : -1})
+				.exec((err, result) => callback(result))
+			});
+		}
 	},
 	getArticleById(_id) {
 		return new Promise((resolve, reject) => {
@@ -72,6 +103,44 @@ module.exports = {
 			article_mongo.update({_id}, article, err => {
 				if(err) return reject(err);
 				resolve(article);
+			})
+		})
+	},
+	getComments(article, callback) {
+		article_comments_mongo.find({article})
+		.populate({
+			path     : 'user',
+			model    : 'user',
+			select : {key : 0, password : 0}
+		})
+		.sort({createTime : -1})
+		.exec((err, comments) => callback(comments))
+	},
+	InsertComments(comments) {
+		return new Promise((resolve, reject) => {
+			article_comments_mongo.create(comments, (err, result) => {
+				if(err) return reject(err);
+				else {
+					resolve(result);
+					this.UpdateComments(comments)
+					.then(article => {})
+					.catch(err => console.log('评论失败，article——id:', comments.article));
+				}
+			})
+		})
+	},
+	UpdateComments(comment) {
+		return new Promise((resolve, reject) => {
+			article_mongo.findOne({_id : comment.article})
+			.exec((err, article) => {
+				article.evaluate = article.evaluate || {total : 0, number : 0, star : 5};
+				article.evaluate.total += comment.star;
+				article.evaluate.number += 1;
+				article.evaluate.star = (article.evaluate.total/article.evaluate.number).toFixed(1);
+				article.save(err => {
+					if(err) return reject(err);
+					resolve(article);
+				})
 			})
 		})
 	},

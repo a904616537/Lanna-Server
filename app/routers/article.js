@@ -22,6 +22,19 @@ const router = {
 			reply({data: articles, current_page: page, total, per_page, last_page, next_page_url, prev_page_url })
 		});
 	},
+	getSubscribe(req, reply) {
+		const is_sub = req.query.is_sub || true;
+		const user = is_sub?req.query.user : req.auth.credentials._id;
+		service.getArticleForSub(user, is_sub, (articles) => reply(message.success('success', articles)))
+	},
+	// 获取文章评论
+	getComments(req, reply) {
+		const {_id} = req.params;
+		const user  = req.auth.credentials._id;
+		console.log('article _id', _id);
+
+		service.getComments(_id, (comments) => reply(message.success('success', comments)))
+	},
 	getById(req, reply) {
 		const {_id} = req.payload;
 		service.getAryicleById(_id)
@@ -32,6 +45,13 @@ const router = {
 		const user = req.auth.credentials._id;
 		req.payload.user = user;
 		service.Insert(req.payload)
+		.then(result => reply(message.success('success', result)))
+		.catch(err => reply(message.unsuccess('error', err)));
+	},
+	insertComments(req, reply) {
+		const user = req.auth.credentials._id;
+		req.payload.user = user;
+		service.InsertComments(req.payload)
 		.then(result => reply(message.success('success', result)))
 		.catch(err => reply(message.unsuccess('error', err)));
 	},
@@ -65,9 +85,23 @@ module.exports = [{
 	}
 }, {
 	method : 'get',
+	path   : `/${ROUTE_NAME}/user/subscribe`,
+	config : {
+		handler     : router.getSubscribe,
+		description : '<p>getArticleForSubscribe</p>'
+	}
+}, {
+	method : 'get',
 	path   : `/${ROUTE_NAME}/{_id}`,
 	config : {
 		handler     : router.getById,
+		description : '<p>getCartCount</p>'
+	}
+}, {
+	method : 'get',
+	path   : `/${ROUTE_NAME}/comments/{_id}`,
+	config : {
+		handler     : router.getComments,
 		description : '<p>getCartCount</p>'
 	}
 }, {
@@ -75,6 +109,13 @@ module.exports = [{
 	path   : `/${ROUTE_NAME}`,
 	config : {
 		handler     : router.post,
+		description : '<p></p>'
+	}
+}, {
+	method : 'post',
+	path   : `/${ROUTE_NAME}/comments`,
+	config : {
+		handler     : router.insertComments,
 		description : '<p></p>'
 	}
 }, {

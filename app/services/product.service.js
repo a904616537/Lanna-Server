@@ -6,7 +6,8 @@
 
 const config  = require('../../config/config'),
 mongoose      = require('mongoose'),
-product_mongo = mongoose.model('product');
+product_mongo = mongoose.model('product'),
+product_comments_mongo = mongoose.model('product_comments');
 
 module.exports = {
 	getProduct(page = 1, size = 10, sort = 'createTime|asc', callback) {
@@ -32,10 +33,25 @@ module.exports = {
 			})
 		})
 	},
+	getComments(product) {
+		return new Promise((resolve, reject) => {
+			product_comments_mongo.find({product})
+			.populate({
+				path   : 'user',
+				model  : 'user',
+				select : {key : 0, password : 0}
+			})
+			.sort({createTime : -1})
+			.exec((err, result) => {
+				if(err) return reject(err);
+				resolve(result);
+			})
+		})
+	},
 	getProductForMe(user) {
 		return new Promise((resolve, reject) => {
 			product_mongo.find({user})
-			query.populate({
+			.populate({
 				path   : 'user',
 				model  : 'user',
 				select : {key : 0, password : 0}
@@ -62,13 +78,46 @@ module.exports = {
 			})
 		})
 	},
+	InsertComments(comments) {
+		return new Promise((resolve, reject) => {
+			console.log('comments', comments)
+			product_comments_mongo.create(comments, (err, result) => {
+				if(err) return reject(err);
+				resolve(result);
+				comments.forEach(val => {
+					this.UpdateComments(val)
+					.then(product => {})
+					.catch(err => console.log('评论失败，product——id:', val.product));
+				})
+			})
+		})
+	},
+	UpdateComments(comment) {
+		return new Promise((resolve, reject) => {
+			product_mongo.findOne({_id : comment.product})
+			.exec((err, product) => {
+				product.evaluate = product.evaluate || {total : 0, number : 0, star : 5};
+				product.evaluate.total += comment.star;
+				product.evaluate.number += 1;
+				product.evaluate.star = (product.evaluate.total/product.evaluate.number).toFixed(1);
+				product.save(err => {
+					if(err) return reject(err);
+					resolve(product);
+				})
+			})
+		})
+	},
 	Update(product) {
 		return new Promise((resolve, reject) => {
 			const _id = product._id;
 			delete product._id;
 			product_mongo.update({_id}, product, err => {
 				if(err) return reject(err);
-				resolve(product);
+				else {
+					// 评论成功后修改商品评论
+					resolve(product);
+
+				}
 			})
 		})
 	},

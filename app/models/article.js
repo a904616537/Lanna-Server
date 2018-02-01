@@ -16,6 +16,11 @@ article_Schema = new Schema({
 	title      : {type : String, default : ''},
 	content    : [article_type_Schema],
 	order      : {type : Number, default: 0},
+	evaluate : {
+		star   : { type : Number, default : 5, min : 1, max : 5 },	// 星级
+		total  : { type : Number, default : 0 },	// 总分
+		number : { type : Number, default : 0 },	// 评价人数
+	},
 	createTime : {type : Date, default : Date.now()}
 });
 

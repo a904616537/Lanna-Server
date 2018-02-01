@@ -22,6 +22,7 @@ order_Schema = new Schema({
 	supplier   : { type: Schema.Types.ObjectId, ref: 'user'},	// 供应⬆商
 	pid        : { type: String},	//  父订单
 	is_sub     : { type: Boolean, default : false},	// 子订单
+	is_comment : { type : Boolean, default: false},	// 是否被评论
 	total      : { type: Number, default: 0, min: 0, set: v => Number(v).toFixed(2) },//总价
 	freight    : { type: Number, default: 0, min: 0, set: v => Number(v).toFixed(2) },//运费
 	status     : { type: Number, default: 0 }, // 订单状态，0: 已下单但未付款,1: 已付款, 2: 已出货，3，已完成, 4：取消
