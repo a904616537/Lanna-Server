@@ -37,7 +37,7 @@ module.exports = {
 	},
 	getArticleForSub(user, is_sub, callback) {
 		// let query = article_mongo.find({});
-		if(is_sub == 'true') {
+		if(is_sub) {
 			article_mongo.find({user : user})
 			.populate({
 				path     : 'user',
