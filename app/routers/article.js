@@ -23,7 +23,7 @@ const router = {
 		});
 	},
 	getSubscribe(req, reply) {
-		const is_sub = req.query.is_sub || true;
+		const is_sub = req.query.is_sub == 'undefined'? true || false;
 		const user = is_sub?req.query.user : req.auth.credentials._id;
 		service.getArticleForSub(user, is_sub, (articles) => reply(message.success('success', articles)))
 	},
