@@ -61,6 +61,7 @@ const router = {
 		const _id = req.params._id;
 
 		service.getOrderById(_id, (err, order) => {
+			console.log('getById Order', order)
 			if(err) return reply({status: false, err})
 			reply(msg.success('success', order))
 		})
