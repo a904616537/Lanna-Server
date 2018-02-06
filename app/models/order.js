@@ -44,6 +44,10 @@ order_Schema.statics = {
 				select : {key : 0, password : 0}
 			}
 		})
+		.populate({
+			path  : 'supplier',
+			model : 'user'
+		})
 		.exec(callback)
 	},
 	getAll(callback) {
@@ -52,6 +56,10 @@ order_Schema.statics = {
 			path     : 'order_item.product',
 			model    : 'product'
 		})
+		.populate({
+			path  : 'supplier',
+			model : 'user'
+		})
 		.exec(callback)
 	},
 	getOrderByUser(user_id, callback) {
@@ -59,6 +67,10 @@ order_Schema.statics = {
 		.populate({
 			path     : 'order_item.product',
 			model    : 'product'
+		})
+		.populate({
+			path  : 'supplier',
+			model : 'user'
 		})
 		.select({_id : 1, status : 1, product : 1, CreateTime : 1})
 		.exec(callback)
