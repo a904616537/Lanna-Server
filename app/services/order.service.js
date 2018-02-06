@@ -71,6 +71,10 @@ module.exports = {
 			path     : 'order_item.product',
 			model    : 'product'
 		})
+		query.populate({
+			path  : 'supplier',
+			model : 'user'
+		})
 		query.sort({CreateTime : -1})
 		query.exec(callback)
 	},
