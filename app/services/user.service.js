@@ -4,12 +4,13 @@
 
 'use strict';
 
-const config = require('../../config/config'),
-mongoose     = require('mongoose'),
-moment       = require('moment'),
-user_mongo   = mongoose.model('user'),
-sms          = require('../helpers/sms'),
-encryption   = require('../helpers/crypto');
+const config     = require('../../config/config'),
+mongoose         = require('mongoose'),
+moment           = require('moment'),
+user_mongo       = mongoose.model('user'),
+behavior_service = require('./behavior.service'),
+sms              = require('../helpers/sms'),
+encryption       = require('../helpers/crypto');
 
 module.exports = {
 	getUserById(user_id, callback) {
@@ -60,16 +61,26 @@ module.exports = {
 			user_mongo.findOne({_id})
 			.exec((err, user) => {
 				const subindex = user.subscribe.findIndex(val => {
-					console.log('val.user', val.user, user_id)
-
 					return val.user == user_id
 				});
-				console.log('val.index', subindex)
-				if(subindex > -1) user.subscribe.splice(subindex, 1);
-				else user.subscribe.push({user : user_id});
+				let behavior_fun = () => {};
+				if(subindex > -1) {
+					// 取消关注
+					user.subscribe.splice(subindex, 1);
+					// 记录到用户行为
+					behavior_fun = () => {behavior_service.post(user._id, 'Unsubscribe', user_id)}
+				} else {
+					// 关注
+					user.subscribe.push({user : user_id});
+					// 记录到用户行为
+					behavior_fun = () => {behavior_service.post(user._id, 'Subscribe', user_id)}
+				}
 				user.save(err => {
 					if(err) reject(err);
-					else resolve(user);
+					else {
+						resolve(user);
+						behavior_fun();
+					}
 				})
 			})
 		})

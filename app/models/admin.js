@@ -12,7 +12,7 @@ admin_Schema = new Schema({
 		username   : String,
 		password   : String,
 		key        : String,
-		createTime : {type : Date, default : Date.now() },
+		createTime : {type : Date, default : Date.now },
 		identity   : String
     });
 

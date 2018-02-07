@@ -13,7 +13,7 @@ banner_Schema = new Schema({
 	link       : String,
 	alt        : String,
 	order      : {type: Number, default: 0},
-	createTime : {type : Date, default : Date.now()}
+	createTime : {type : Date, default : Date.now}
 });
 
 banner_Schema.virtual('date').get(() => {

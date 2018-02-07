@@ -13,7 +13,6 @@ ROUTE_NAME = 'user'
 const router = {
 	getUser(req, reply) {
 		const _id = req.query._id;
-		console.log('user_id', _id)
 		service.getUserById(_id, (result) => {
 			if(result) reply(msg.success('success', result))
 			else reply(msg.unsuccess('error'))
@@ -30,7 +29,7 @@ const router = {
 	},
 	put(req, reply) {
 		const {_id, key, value} = req.payload;
-		console.log('req.payload', req.payload);
+
 		service.Update(_id, key, value)
 		.then(user => reply({status : true, data : user}))
 		.catch(err => reply({status : false, err : err}))

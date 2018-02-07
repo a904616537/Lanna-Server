@@ -6,6 +6,7 @@
 
 const config           = require('../../config/config'),
 mongoose               = require('mongoose'),
+behavior_service       = require('./behavior.service'),
 user_mongo             = mongoose.model('user'),
 article_mongo          = mongoose.model('article'),
 article_comments_mongo = mongoose.model('article_comments');
@@ -91,8 +92,12 @@ module.exports = {
 	Insert(article) {
 		return new Promise((resolve, reject) => {
 			article_mongo.create(article, (err, result) => {
+
 				if(err) return reject(err);
 				resolve(result);
+				console.log('article._id', article._id)
+				// 记录到用户行为
+				behavior_service.post(article.user, 'Article', result._id)
 			})
 		})
 	},

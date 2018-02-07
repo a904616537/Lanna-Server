@@ -48,6 +48,22 @@ module.exports = {
 			})
 		})
 	},
+	getRecommend() {
+		return new Promise((resolve, reject) => {
+			product_mongo.find({})
+			.limit(8)
+			.populate({
+				path   : 'user',
+				model  : 'user',
+				select : {key : 0, password : 0}
+			})
+			.sort({createTime : -1})
+			.exec((err, result) => {
+				if(err) return reject(err);
+				resolve(result);
+			})
+		})
+	},
 	getProductForMe(user) {
 		return new Promise((resolve, reject) => {
 			product_mongo.find({user})
@@ -56,6 +72,7 @@ module.exports = {
 				model  : 'user',
 				select : {key : 0, password : 0}
 			})
+			.sort({createTime : -1})
 			.exec((err, result) => {
 				if(err) return reject(err);
 				resolve(result);

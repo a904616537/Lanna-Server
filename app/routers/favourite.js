@@ -40,7 +40,6 @@ const router = {
 	},
 	getForUser(req, reply) {
 		const user_id = req.auth.credentials._id;
-		console.log('user_id', user_id)
 		service.getFavouriteForUser(user_id)
 		.then(result => reply(message.success('success', result)))
 		.catch(err => reply(message.unsuccess('error', err)))

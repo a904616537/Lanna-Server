@@ -21,7 +21,7 @@ article_Schema = new Schema({
 		total  : { type : Number, default : 0 },	// 总分
 		number : { type : Number, default : 0 },	// 评价人数
 	},
-	createTime : {type : Date, default : Date.now()}
+	createTime : {type : Date, default : Date.now}
 });
 
 article_Schema.virtual('date').get(() => {

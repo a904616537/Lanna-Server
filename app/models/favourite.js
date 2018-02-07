@@ -9,7 +9,7 @@ Schema           = mongoose.Schema,
 favourite_Schema = new Schema({
 	user       : {type : Schema.Types.ObjectId, ref : 'user'},
 	article    : {type : Schema.Types.ObjectId, ref : 'article'},
-	createTime : {type : Date, default : Date.now()}
+	createTime : {type : Date, default : Date.now}
 });
 
 favourite_Schema.virtual('date').get(() => {

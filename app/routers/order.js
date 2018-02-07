@@ -50,6 +50,13 @@ const router = {
 			reply(msg.success('success', order))
 		})
 	},
+	getUserList(req, reply) {
+		const user_id = req.query._id;
+		service.getOrderProductByUser(user_id, (err, order) => {
+			if(err) return reply({status: false, err})
+			reply(msg.success('success', order))
+		})
+	},
 	getSupplierList(req, reply) {
 		const user_id = req.auth.credentials._id;
 		service.getOrderBySupplier(user_id, (err, order) => {

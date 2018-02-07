@@ -40,7 +40,6 @@ module.exports = {
 				model : 'article'
 			})
 			.exec((err, result) => {
-				console.log('result' ,result)
 				if(err) return reject(err);
 				resolve(result);
 			})

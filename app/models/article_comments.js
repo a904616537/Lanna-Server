@@ -11,7 +11,7 @@ article_comments_Schema = new Schema({
 		article    : {type : Schema.Types.ObjectId, ref : 'article'},
 		star       : {type : Number, default : 5},
 		comment    : {type : String, default : ''},
-		createTime : {type : Date, default : Date.now() }
+		createTime : {type : Date, default : Date.now }
     });
 
 article_comments_Schema.virtual('date').get(() => {

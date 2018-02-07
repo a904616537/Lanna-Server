@@ -28,9 +28,13 @@ const router = {
 	},
 	getComments(req, reply) {
 		// const user = req.auth.credentials._id;
-		console.log('req.params', req.query)
 		const {_id} = req.query;
 		service.getComments(_id)
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
+	},
+	getRecommend(req, reply) {
+		service.getRecommend()
 		.then(result => reply(msg.success('success', result)))
 		.catch(err => reply(msg.unsuccess('error', err)));
 	},
@@ -107,6 +111,13 @@ module.exports = [{
 	config : {
 		handler     : router.getComments,
 		description : '<p>获取商品评论</p>'
+	}
+}, {
+	method : 'get',
+	path   : `/${ROUTE_NAME}/recommend`,
+	config : {
+		handler     : router.getRecommend,
+		description : '<p>获取推荐商品</p>'
 	}
 }, {
 	method : 'post',

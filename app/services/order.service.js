@@ -4,13 +4,14 @@
 
 'use strict';
 
-const config = require('../../config/config'),
-mongoose     = require('mongoose'),
-moment       = require('moment'),
-async        =require('async'),
-order_mongo  = mongoose.model('order'),
-cart_service = require('./cart.service'),
-user_service = require('./user.service');
+const config     = require('../../config/config'),
+mongoose         = require('mongoose'),
+moment           = require('moment'),
+async            = require('async'),
+order_mongo      = mongoose.model('order'),
+behavior_service = require('./behavior.service'),
+cart_service     = require('./cart.service'),
+user_service     = require('./user.service');
 
 const getId = () => {
 	var str = "" + moment().unix(),
@@ -197,13 +198,19 @@ module.exports = {
 							}
 							else {
 								console.log(moment(), '订单生成成功', order)
+								// 记录购买商品
+								order.order_item.forEach(val => {
+									// 记录到用户行为
+									behavior_service.post(user._id, 'Product', val.product)
+								})
 								// 生成订单未出错则通知清空购物车！
 								clearNext();
 								console.log('---------- 后台继续拆分订单 ----------');
 								sub_order.forEach(val => {
+
 									order_mongo.create(val, (err, doc) => {
 										if(err) console.log(moment(), '拆分订单生成失败', err)
-										else console.log(moment(), '拆分订单生成成功', order)
+										else console.log(moment(), '拆分订单生成成功', val)
 									})
 								})
 								resolve(order);

@@ -31,7 +31,6 @@ const router = {
 	getComments(req, reply) {
 		const {_id} = req.params;
 		const user  = req.auth.credentials._id;
-		console.log('article _id', _id);
 
 		service.getComments(_id, (comments) => reply(message.success('success', comments)))
 	},

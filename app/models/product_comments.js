@@ -11,7 +11,7 @@ product_comments_Schema = new Schema({
 		product    : {type : Schema.Types.ObjectId, ref : 'product'},
 		star       : {type : Number, default : 5},
 		comment    : {type : String, default : ''},
-		createTime : {type : Date, default : Date.now() }
+		createTime : {type : Date, default : Date.now }
     });
 
 product_comments_Schema.virtual('date').get(() => {
