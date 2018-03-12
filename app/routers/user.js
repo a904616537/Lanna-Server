@@ -54,7 +54,7 @@ const router = {
 		const {user_id} = req.payload;
 		service.putSubscribe(_id, user_id)
 		.then(result => reply(msg.success('success', result)))
-		.catch(err => reply(msg.unsuccess('error', err)))	
+		.catch(err => reply(msg.unsuccess('error', err)))
 	}
 }
 

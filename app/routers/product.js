@@ -20,6 +20,12 @@ const router = {
 			reply({data: products, current_page: page, total, per_page, last_page, next_page_url, prev_page_url })
 		})
 	},
+	delete(req, reply) {
+		const {_id} = req.query;
+		service.Delete(_id)
+		.then(result => reply(msg.success('success', result)))
+		.catch(err => reply(msg.unsuccess('error', err)));
+	},
 	getMe(req, reply) {
 		const user = req.auth.credentials._id;
 		service.getProductForMe(user)
@@ -97,6 +103,13 @@ module.exports = [{
 	config : {
 		handler     : router.get,
 		description : '<p>获取商品</p>'
+	}
+},{
+	method : 'delete',
+	path   : `/${ROUTE_NAME}`,
+	config : {
+		handler     : router.delete,
+		description : '<p>删除商品</p>'
 	}
 }, {
 	method : 'get',
